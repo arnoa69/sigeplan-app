@@ -37,7 +37,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const finishLogin = async (userId: string, secret: string) => {
-    await account.updateMagicURLSession(userId, secret);
+    try {
+      // If there happens to be an active session, Appwrite will throw an error when we try to updateMagicURLSession
+      // We first try to verify the session
+      await account.updateMagicURLSession(userId, secret);
+    } catch (error: any) {
+      if (error?.message?.includes('prohibited when a session is active')) {
+        // User is already logged in or has an active session
+        // We can just proceed and check the user
+        console.log('Session already active, proceeding...');
+      } else {
+        throw error;
+      }
+    }
     await checkUser();
   };
 
