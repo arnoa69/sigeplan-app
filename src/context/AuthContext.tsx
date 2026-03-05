@@ -6,6 +6,7 @@ interface AuthContextType {
   user: Models.User<Models.Preferences> | null;
   loading: boolean;
   login: (email: string) => Promise<void>;
+  finishLogin: (userId: string, secret: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -35,13 +36,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await account.createMagicURLToken('unique()', email, window.location.origin + '/auth-callback');
   };
 
+  const finishLogin = async (userId: string, secret: string) => {
+    await account.updateMagicURLSession(userId, secret);
+    await checkUser();
+  };
+
   const logout = async () => {
     await account.deleteSession('current');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, finishLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

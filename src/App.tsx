@@ -9,13 +9,14 @@ import { MagicUpload } from './pages/MagicUpload';
 import { Login } from './pages/Login';
 import { Profile } from './pages/Profile';
 import { AdminPanel } from './pages/AdminPanel';
+import { AuthCallback } from './pages/AuthCallback';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>Laden...</div>;
   if (!user) return <Navigate to="/login" />;
-  
+
   return <Layout>{children}</Layout>;
 };
 
@@ -27,6 +28,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/upload" element={<ProtectedRoute><MagicUpload /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
